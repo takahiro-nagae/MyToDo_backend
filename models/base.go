@@ -2,10 +2,12 @@ package models
 
 import (
 	"MyToDo_backend/config"
+	"crypto/sha1"
 	"database/sql"
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -18,7 +20,7 @@ const (
 )
 
 func init() {
-	Db, err := sql.Open(config.Config.SQLDriver, config.Config.DbName)
+	Db, err = sql.Open(config.Config.SQLDriver, config.Config.DbName)
 
 	if err != nil {
 		log.Fatalln(err)
@@ -33,4 +35,14 @@ func init() {
 		created_at DATETIME)`, tableNameUser)
 
 	Db.Exec(cmdU)
+}
+
+func createUUID() (uuidObj uuid.UUID) {
+	uuidObj, _ = uuid.NewUUID()
+	return uuidObj
+}
+
+func Encrypt(plainText string) (cryptText string) {
+	cryptText = fmt.Sprintf("%x", sha1.Sum([]byte(plainText)))
+	return cryptText
 }
